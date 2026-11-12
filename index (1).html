@@ -1,0 +1,915 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Prototype T4 · Trợ lý Khiếu nại Hàng Không Đúng Mô Tả</title>
+  <style>
+    :root {
+      --brand: #ee4d2d;
+      --brand-soft: #fff1ed;
+      --ink: #1e293b;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --green: #15803d;
+      --green-bg: #dcfce7;
+      --amber: #b45309;
+      --amber-bg: #fef3c7;
+      --red: #b91c1c;
+      --red-bg: #fee2e2;
+      --blue: #1d4ed8;
+      --blue-bg: #dbeafe;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Be Vietnam Pro", "Segoe UI", system-ui, -apple-system, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    header {
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+      padding: 14px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .title-wrap h1 { margin: 0; font-size: 18px; display: flex; align-items: center; gap: 8px; }
+    .badge-track {
+      background: var(--brand);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+    .sub { color: var(--muted); font-size: 13px; margin-top: 2px; }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    .scen-btn {
+      border: 1px solid var(--line);
+      background: #fff;
+      padding: 6px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all .15s;
+    }
+    .scen-btn:hover { border-color: var(--brand); color: var(--brand); }
+    .scen-btn.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+    .toggle-ann {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      background: #f1f5f9;
+      padding: 6px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    main {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 20px 24px 32px;
+      display: grid;
+      grid-template-columns: 470px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+    @media (max-width: 980px) {
+      main { grid-template-columns: 1fr; }
+    }
+
+    /* App Device Frame */
+    .app-shell {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(15, 23, 42, .06);
+    }
+    .role-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      background: #f1f5f9;
+      padding: 4px;
+      gap: 4px;
+    }
+    .role-tab {
+      border: 0;
+      background: transparent;
+      padding: 8px 6px;
+      border-radius: 14px;
+      font: inherit;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+    .ai-live-bar {
+      max-width: 1320px;
+      margin: 12px auto 0;
+      padding: 0 24px;
+    }
+    .ai-live-bar details {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 8px 14px;
+      font-size: 13px;
+    }
+    .ai-live-bar summary {
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .ai-live-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+      align-items: center;
+    }
+    .ai-live-row input {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font: inherit;
+      font-size: 12.5px;
+    }
+    .ai-live-out {
+      margin-top: 8px;
+      padding: 8px 10px;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font-size: 12.5px;
+      white-space: pre-wrap;
+      display: none;
+    }
+    .role-tab.active {
+      background: #fff;
+      color: var(--ink);
+      box-shadow: 0 1px 3px rgba(0,0,0,.08);
+    }
+    .dot-alert {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--brand);
+      display: inline-block;
+    }
+
+    .order-banner {
+      background: #fffaf8;
+      border-bottom: 1px solid var(--line);
+      padding: 10px 14px;
+      font-size: 12.5px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+    }
+    .order-banner strong { display: block; font-size: 13px; }
+    .deadline-pill {
+      background: var(--blue-bg);
+      color: var(--blue);
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .chat-area {
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 460px;
+      max-height: 620px;
+      overflow-y: auto;
+      background: #fcfcfd;
+    }
+    .msg-user {
+      align-self: flex-end;
+      max-width: 86%;
+      background: var(--brand);
+      color: #fff;
+      padding: 10px 13px;
+      border-radius: 14px 14px 3px 14px;
+    }
+    .msg-meta {
+      font-size: 11px;
+      opacity: .85;
+      margin-top: 4px;
+    }
+    .attach-chip {
+      display: inline-block;
+      margin-top: 6px;
+      background: rgba(255,255,255,.2);
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+
+    .msg-ai {
+      align-self: flex-start;
+      max-width: 96%;
+      background: #fff;
+      border: 1px solid var(--line);
+      padding: 12px 14px;
+      border-radius: 14px 14px 14px 3px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.03);
+    }
+    .ai-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 6px;
+      flex-wrap: wrap;
+    }
+    .ai-id {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .3px;
+    }
+    .conf-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 2px 9px;
+      border-radius: 999px;
+    }
+    .conf-warn { background: var(--amber-bg); color: var(--amber); }
+    .conf-alert { background: var(--red-bg); color: var(--red); }
+    .conf-ok { background: var(--green-bg); color: var(--green); }
+
+    .evidence-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin: 10px 0;
+    }
+    .ev-card {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 8px 10px;
+      background: #f8fafc;
+      font-size: 12.5px;
+    }
+    .ev-card.locked {
+      border-color: #86efac;
+      background: #f0fdf4;
+    }
+    .ev-card.changed {
+      border-color: #fca5a5;
+      background: #fef2f2;
+    }
+    .ev-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 3px;
+    }
+    .ev-time {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    .status-box {
+      border-radius: 10px;
+      padding: 9px 11px;
+      margin-top: 8px;
+      font-size: 13px;
+    }
+    .sb-info { background: var(--blue-bg); color: #1e3a8a; }
+    .sb-warn { background: var(--amber-bg); color: #78350f; }
+    .sb-ok { background: var(--green-bg); color: #14532d; }
+    .sb-red { background: var(--red-bg); color: #7f1d1d; }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+    .btn {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      padding: 7px 11px;
+      border-radius: 9px;
+      font: inherit;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn:hover { background: #f8fafc; }
+    .btn.primary { background: var(--brand); color: #fff; border-color: var(--brand); }
+    .btn.primary:hover { filter: brightness(.95); }
+    .btn.dark { background: var(--ink); color: #fff; border-color: var(--ink); }
+    .btn.green { background: var(--green); color: #fff; border-color: var(--green); }
+    .btn.outline { border-color: var(--ink); }
+
+    .composer {
+      border-top: 1px solid var(--line);
+      padding: 10px 12px;
+      background: #fff;
+      display: flex;
+      gap: 6px;
+    }
+    .composer input {
+      flex: 1;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 8px 10px;
+      font: inherit;
+      font-size: 13px;
+    }
+
+    /* Numbered HAX/PAIR markers */
+    .pin {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 19px;
+      height: 19px;
+      border-radius: 50%;
+      background: #0f172a;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      margin-right: 4px;
+      vertical-align: middle;
+      flex: none;
+    }
+    .hide-pins .pin { display: none; }
+
+    /* Right Inspector Panels */
+    .inspector { display: flex; flex-direction: column; gap: 14px; }
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 15px 18px;
+    }
+    .panel h2 { font-size: 15px; margin: 0 0 8px; }
+    .promise-box {
+      border-left: 4px solid var(--brand);
+      background: var(--brand-soft);
+      padding: 8px 12px;
+      border-radius: 0 8px 8px 0;
+      font-size: 13.5px;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { border-bottom: 1px solid var(--line); padding: 7px 6px; text-align: left; vertical-align: top; }
+    th { color: var(--muted); font-size: 12px; font-weight: 600; }
+    .pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .p-auto { background: var(--green-bg); color: var(--green); }
+    .p-ask { background: var(--amber-bg); color: var(--amber); }
+    .p-ban { background: var(--red-bg); color: var(--red); }
+    .ann-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+    .ann-list li { display: flex; align-items: flex-start; gap: 6px; }
+    .banned-note {
+      margin-top: 8px;
+      padding: 8px 10px;
+      background: #fef2f2;
+      border: 1px dashed #fca5a5;
+      border-radius: 10px;
+      font-size: 12.5px;
+      color: #991b1b;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="title-wrap">
+      <h1><span class="badge-track">T4 · THƯƠNG MẠI ĐIỆN TỬ</span> Trợ lý Khiếu nại "Hàng Không Đúng Mô Tả"</h1>
+      <div class="sub">Dữ liệu dựng · Bấm qua 2 ca đắt nhất (#5, #4), 1 ca bình thường (#1), hoặc gõ <b>ca lạ</b> ngay ô chat để thử luật tự chủ.</div>
+    </div>
+    <div class="toolbar">
+      <button class="scen-btn active" data-s="s5">Ca đắt #5 · Người bán đúng</button>
+      <button class="scen-btn" data-s="s4">Ca đắt #4 · Sửa mô tả sau bán</button>
+      <button class="scen-btn" data-s="s1">Ca thường #1 · Shop nhận nhầm</button>
+      <label class="toggle-ann"><input type="checkbox" id="togglePins" checked /> Hiện số HAX/PAIR</label>
+    </div>
+  </header>
+
+  <div class="ai-live-bar">
+    <details>
+      <summary>Chế độ AI thật (tuỳ chọn cho Bonus +3đ — dán Gemini API key lúc chạy, không lưu vào code)</summary>
+      <div class="ai-live-row">
+        <input id="apiKeyInput" type="password" placeholder="Dán Gemini API key (chỉ nằm trong RAM trình duyệt)..." style="min-width:290px" />
+        <input id="modelInput" type="text" value="gemini-2.5-flash" style="width:155px" />
+        <button class="btn primary" type="button" id="runLiveAiBtn">Gọi AI thật so khiếu nại vs mô tả lúc đặt</button>
+        <button class="btn" type="button" id="downloadLogBtn" style="display:none">Tải log JSON sạch (không chứa key)</button>
+      </div>
+      <div class="ai-live-out" id="liveAiOut"></div>
+    </details>
+  </div>
+
+  <main>
+    <section class="app-shell" id="appShell">
+      <div class="role-tabs">
+        <button class="role-tab active" data-role="buyer">Người mua</button>
+        <button class="role-tab" data-role="seller">Người bán (48h) <span class="dot-alert" id="sellerDot" style="display:none"></span></button>
+        <button class="role-tab" data-role="staff">Nhân viên (Duyệt) <span class="dot-alert" id="staffDot" style="display:none"></span></button>
+      </div>
+
+      <div class="order-banner" id="orderBanner"></div>
+      <div class="chat-area" id="chatArea"></div>
+
+      <form class="composer" id="customForm">
+        <input id="customInput" type="text" placeholder="Thử ca lạ lúc demo (vd: khoá shop, xin SĐT, hàng sai rồi)..." />
+        <button class="btn dark" type="submit">Thử ca lạ</button>
+      </form>
+    </section>
+
+    <aside class="inspector">
+      <div class="panel">
+        <h2>Lời hứa với hai bên ở thiết kế này</h2>
+        <div class="promise-box" id="promiseBox"></div>
+        <div class="banned-note">
+          <b>Kiểm soát việc CẤM trên giao diện:</b> Trong khung chat tuyệt đối <b>không có nút</b> <code>phat_shop</code> (trừ điểm/khoá shop) và <b>không hiển thị SĐT/địa chỉ</b> giữa người mua và người bán.
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Mức tự chủ của 5 tool (theo §4)</h2>
+        <table>
+          <thead><tr><th>Tool</th><th>Mức</th><th>Lý do theo cost-of-error</th></tr></thead>
+          <tbody id="toolsBody"></tbody>
+        </table>
+      </div>
+
+      <div class="panel">
+        <h2>Chú thích HAX / PAIR trên màn hình (chỉ từng số khi demo)</h2>
+        <ul class="ann-list" id="annList"></ul>
+      </div>
+    </aside>
+  </main>
+
+  <script>
+    const SCENARIOS = {
+      s5: {
+        orderId: "DH-261108-9941",
+        product: "Máy xay mini gia đình 300W",
+        buyerMsg: "Máy xay mini công suất yếu quá, không như quảng cáo trên mạng, hoàn tiền ngay cho tôi!",
+        attachment: "📷 Anh_tem_may_300W.jpg",
+        deadline: "Còn 11/15 ngày",
+        snapshotDesc: "Máy xay mini 300W · cối thuỷ tinh 0.6L · bảo hành 6 tháng",
+        snapshotTime: "Chụp lúc đặt: 08/11 · 19:15",
+        currentDesc: "Máy xay mini 300W · cối thuỷ tinh 0.6L · bảo hành 6 tháng",
+        currentTime: "Hiện tại: Không thay đổi",
+        diffFlag: false,
+        confClass: "conf-warn",
+        confText: "Chưa đủ căn cứ kết luận sai mô tả",
+        aiReply: "Mình đã đối chiếu ảnh tem bạn gửi (<b>300W</b>) với bản chụp mô tả lúc bạn đặt hàng. Hiện thông số trên tem <b>khớp với mô tả lúc đặt</b> nên mình chưa đủ căn cứ đề xuất hoàn tiền ngay.",
+        narrowQ: "Ngoài công suất 300W, sản phẩm bạn nhận có gặp lỗi nào khác (không chạy, nứt vỡ, thiếu phụ kiện) không?",
+        promise: "<b>Công bằng hai bên:</b> AI không được tự gọi <code>soan_hoan_tien</code> chỉ vì khách giục hoàn ngay khi ảnh tem khớp mô tả lúc đặt. Khách vẫn có quyền bổ sung lỗi khác, gửi shop phản hồi 48h, hoặc gặp nhân viên."
+      },
+      s4: {
+        orderId: "DH-261110-4412",
+        product: "Ví da nam công sở cao cấp",
+        buyerMsg: "Lúc mình đặt shop ghi 'da bò thật 100%', giờ nhận hàng thấy bong tróc như da PU, mở lại link thấy shop sửa thành 'da tổng hợp' rồi!",
+        attachment: "📷 Anh_vi_bong_troc.jpg",
+        deadline: "Còn 13/15 ngày",
+        snapshotDesc: "Ví nam <u>da bò thật 100%</u> · khâu tay · hộp quà tặng",
+        snapshotTime: "Chụp lúc đặt: 10/11 · 14:20",
+        currentDesc: "Ví nam <u>da tổng hợp</u> · khâu tay · hộp quà tặng",
+        currentTime: "Shop đã sửa lúc: 11/11 · 09:05",
+        diffFlag: true,
+        confClass: "conf-alert",
+        confText: "Phát hiện mô tả đã bị sửa sau lúc đặt — cần nhân viên duyệt",
+        aiReply: "Mình ghi nhận sự khác biệt giữa thời điểm đặt đơn và hiện tại. Hệ thống <b>đã khoá căn cứ theo bản chụp mô tả lúc đặt hàng ('da bò thật 100%')</b>, không dùng bản mới sửa. Bạn có thể đính kèm thêm ảnh cận cảnh bề mặt bong tróc (hoặc giữ ảnh hiện có) để chuyển nhân viên xử lý ưu tiên.",
+        narrowQ: "Bạn muốn bổ sung thêm ảnh cận cảnh bề mặt ví hay chuyển thẳng hồ sơ sang nhân viên ngay?",
+        promise: "<b>Bảo vệ nguồn sự thật:</b> Sửa câu chữ không cứu được nếu AI đọc mô tả hiện tại. Thiết kế khoá cứng dữ liệu vào <code>order_snapshot_description</code> và tự động gắn cờ để nhân viên duyệt thay vì AI tự <code>tu_choi_khieu_nai</code>."
+      },
+      s1: {
+        orderId: "DH-261109-1180",
+        product: "Áo thun cotton form rộng · Size L",
+        buyerMsg: "Mình đặt áo size L mà nhận được size M, mặc không vừa. Shop cũng nhắn nhận là gửi nhầm rồi. Mình muốn trả hàng hoàn tiền thì làm sao?",
+        attachment: "📷 Anh_tem_size_M.jpg",
+        deadline: "Còn 12/15 ngày",
+        snapshotDesc: "Áo thun cotton · Phân loại đã chọn: Trắng / Size L",
+        snapshotTime: "Chụp lúc đặt: 09/11 · 20:05",
+        currentDesc: "Áo thun cotton · Trắng / Size L (Shop đã xác nhận gửi nhầm M)",
+        currentTime: "Chat shop: 'Xin lỗi bạn bên mình đóng nhầm size M'",
+        diffFlag: false,
+        confClass: "conf-ok",
+        confText: "Đủ căn cứ ban đầu — đã soạn sẵn nháp hoàn tiền",
+        aiReply: "Mình đã kiểm tra đơn <b>DH-261109-1180</b> (chọn <b>Size L</b>), ảnh tem <b>Size M</b> và tin nhắn shop xác nhận gửi nhầm. Mình đã <b>soạn sẵn hồ sơ đề xuất hoàn tiền</b> để bạn không phải chờ nhân viên sàn nếu shop bấm xác nhận.",
+        narrowQ: "Bạn kiểm tra lại thông tin đề xuất hoàn tiền bên dưới rồi bấm gửi cho Shop duyệt nhé:",
+        promise: "<b>Ca bình thường không chờ vô ích:</b> AI <code>tự làm</code> bước xin ảnh + soạn sẵn hồ sơ hoàn tiền; Shop bấm xác nhận 1 chạm trong 48h (không kẹt hàng chờ nhân viên sàn)."
+      }
+    };
+
+    const TOOLS = [
+      ["yeu_cau_bang_chung", "Tự làm", "p-auto", "Tối đa 2 lượt, phải nêu rõ thiếu gì. Sai chỉ tốn 1 tin; chờ duyệt gây nghẽn."],
+      ["chuyen_truong_nhom", "Tự làm", "p-auto", "Chuyển thừa chỉ tốn vài phút đọc hồ sơ; chậm chuyển làm kẹt ca khó (#4, #5)."],
+      ["soan_hoan_tien", "Cần duyệt", "p-ask", "Tách soạn nháp + duyệt chi (Shop 48h / Nhân viên). Tránh hoàn oan (#5) nhưng vẫn nhanh (#1)."],
+      ["tu_choi_khieu_nai", "Cần duyệt", "p-ask", "Nhân viên duyệt, quá 24h leo thang. Tránh đóng oan khi đọc nhầm mô tả (#4)."],
+      ["phat_shop", "Cấm", "p-ban", "Không có nút trong chat; phạt nhầm hại cả shop (#6, #7). Chỉ gắn cờ khi chuyển người."]
+    ];
+
+    const ANNS = [
+      ["1", "HAX G1 + G2 · Minh bạch AI & độ chắc", "Nhãn 'Trợ lý AI — không tự quyết' + chip trạng thái nói rõ mức chắc thay vì con số %."],
+      ["2", "HAX G11 + PAIR Explainability", "Thẻ 2 cột đối chiếu 'Mô tả lúc đặt hàng' vs 'Ảnh tem / Mô tả hiện tại' để hai bên tự kiểm."],
+      ["3", "HAX G10 · Thu hẹp khi nghi ngờ", "Hỏi đúng 1 câu hẹp ('còn lỗi nào khác ngoài công suất?') thay vì đoán hay tự đóng đơn."],
+      ["4", "HAX G8/G9 · Sửa & Hoàn tác dễ dàng", "Nút sửa/bổ sung bằng chứng hoặc Hoàn tác nháp đã gửi mà không phải bắt đầu lại."],
+      ["5", "Mức tự chủ · Cần duyệt & hai phía", "Chuyển sang tab 'Phía Người bán' thấy đúng hồ sơ tóm tắt + đồng hồ hạn phản hồi 48h."],
+      ["6", "PAIR Errors + Graceful Failure", "Luôn có nút 'Gặp nhân viên xử lý' kèm sẵn toàn bộ log đối chiếu, không bắt kể lại."]
+    ];
+
+    let cur = "s5";
+    let role = "buyer";
+    let stepState = "init"; // init | extraEvidence | sentToSeller | sellerApproved | sellerDisputed | staff | custom
+    let customLog = null;
+
+    const $ = s => document.querySelector(s);
+    const escHtml = s => s.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[c]));
+
+    function render() {
+      const sc = SCENARIOS[cur];
+      $("#orderBanner").innerHTML = `
+        <div><strong>${sc.product}</strong><span>Mã đơn: ${sc.orderId}</span></div>
+        <span class="deadline-pill">${sc.deadline}</span>
+      `;
+      $("#promiseBox").innerHTML = sc.promise;
+      $("#toolsBody").innerHTML = TOOLS.map(t => `
+        <tr><td><code>${t[0]}</code></td><td><span class="pill ${t[2]}">${t[1]}</span></td><td>${t[3]}</td></tr>
+      `).join("");
+      $("#annList").innerHTML = ANNS.map(a => `
+        <li><span class="pin">${a[0]}</span><div><b>${a[1]}</b><br><span style="color:var(--muted)">${a[2]}</span></div></li>
+      `).join("");
+
+      $("#sellerDot").style.display = (stepState === "sentToSeller" || stepState === "sellerDisputed" || stepState === "sellerApproved") ? "inline-block" : "none";
+      $("#staffDot").style.display = (stepState === "staff" || stepState === "sellerDisputed" || stepState === "staffApprovedRefund" || stepState === "staffRejected") ? "inline-block" : "none";
+
+      if (role === "buyer") renderBuyer(sc);
+      else if (role === "seller") renderSeller(sc);
+      else renderStaff(sc);
+    }
+
+    function renderBuyer(sc) {
+      let html = `
+        <div class="msg-user">
+          ${sc.buyerMsg}
+          <div class="attach-chip">${sc.attachment}</div>
+          <div class="msg-meta">Người mua · vừa xong</div>
+        </div>
+      `;
+
+      html += `
+        <div class="msg-ai">
+          <div class="ai-header">
+            <span class="ai-id"><span class="pin">1</span>Trợ lý AI Shopee · Hỗ trợ đối chiếu (không tự quyết)</span>
+            <span class="conf-badge ${sc.confClass}">${sc.confText}</span>
+          </div>
+          <div>${sc.aiReply}</div>
+          <div class="evidence-grid">
+            <div class="ev-card locked">
+              <div class="ev-label"><span class="pin">2</span>MÔ TẢ LÚC ĐẶT (KHOÁ CỨNG)</div>
+              <div>${sc.snapshotDesc}</div>
+              <div class="ev-time">${sc.snapshotTime}</div>
+            </div>
+            <div class="ev-card ${sc.diffFlag ? "changed" : ""}">
+              <div class="ev-label">${sc.diffFlag ? "MÔ TẢ HIỆN TẠI (ĐÃ SỬA)" : "ĐỐI CHIẾU HIỆN TẠI / ẢNH"}</div>
+              <div>${sc.currentDesc}</div>
+              <div class="ev-time">${sc.currentTime}</div>
+            </div>
+          </div>
+          <div style="margin-top:6px"><span class="pin">3</span>${sc.narrowQ}</div>
+      `;
+
+      if (stepState === "init") {
+        if (cur === "s5") {
+          html += `
+            <div class="actions">
+              <button class="btn" onclick="setStep('extraEvidence')"><span class="pin">4</span>Bổ sung lỗi/ảnh khác</button>
+              <button class="btn primary" onclick="setStep('sentToSeller')"><span class="pin">5</span>Gửi Shop phản hồi (48h)</button>
+              <button class="btn outline" onclick="setStep('staff')"><span class="pin">6</span>Gặp nhân viên xử lý</button>
+            </div>`;
+        } else if (cur === "s4") {
+          html += `
+            <div class="actions">
+              <button class="btn" onclick="setStep('extraEvidence')"><span class="pin">4</span>Đính kèm thêm 1 ảnh cận cảnh</button>
+              <button class="btn primary" onclick="setStep('staff')"><span class="pin">6</span>Chuyển nhân viên xử lý ưu tiên</button>
+            </div>`;
+        } else {
+          html += `
+            <div class="status-box sb-info"><b>Đề xuất hoàn tiền (Nháp):</b> Hoàn 100% theo đơn ${sc.orderId} · Chờ Shop xác nhận 1 chạm (tối đa 48h).</div>
+            <div class="actions">
+              <button class="btn primary" onclick="setStep('sentToSeller')"><span class="pin">5</span>Gửi đề xuất hoàn tiền cho Shop</button>
+              <button class="btn" onclick="setStep('extraEvidence')"><span class="pin">4</span>Sửa bằng chứng</button>
+              <button class="btn outline" onclick="setStep('staff')"><span class="pin">6</span>Gặp nhân viên</button>
+            </div>`;
+        }
+      } else if (stepState === "extraEvidence") {
+        html += `
+          <div class="status-box sb-ok">
+            Đã đính kèm bổ sung: <code>Anh_can_canh_loi.jpg</code> (Tool <code>yeu_cau_bang_chung</code> — Tự làm).
+            <div class="actions">
+              <button class="btn" onclick="setStep('init')"><span class="pin">4</span>Hoàn tác ảnh vừa gửi</button>
+              <button class="btn primary" onclick="setStep('sentToSeller')"><span class="pin">5</span>Gửi Shop phản hồi (48h)</button>
+              <button class="btn outline" onclick="setStep('staff')"><span class="pin">6</span>Chuyển nhân viên kèm hồ sơ</button>
+            </div>
+          </div>`;
+      } else if (stepState === "sentToSeller") {
+        html += `
+          <div class="status-box sb-warn">
+            <b>Đã mở luồng phản hồi hai bên:</b> Người bán có <b>47:59:50</b> để xem đối chiếu và phản hồi. Bấm tab <b>"Người bán (48h)"</b> ở trên để xem màn hình shop thấy!
+            <div class="actions">
+              <button class="btn" onclick="setStep('init')"><span class="pin">4</span>Hoàn tác gửi yêu cầu</button>
+              <button class="btn outline" onclick="setStep('staff')"><span class="pin">6</span>Gặp nhân viên ngay</button>
+            </div>
+          </div>`;
+      } else if (stepState === "sellerApproved") {
+        html += `<div class="status-box sb-ok"><b>Người bán đã bấm "Đồng ý hoàn tiền"!</b> Yêu cầu hoàn tiền được duyệt mà không cần chờ nhân viên sàn.</div>`;
+      } else if (stepState === "sellerDisputed") {
+        html += `<div class="status-box sb-warn"><b>Người bán đã phản hồi giữ nguyên lập luận.</b> Hồ sơ đã chuyển sang tab <b>Nhân viên (Duyệt)</b> để phân xử trong 24h.</div>`;
+      } else if (stepState === "staff") {
+        html += `
+          <div class="status-box sb-info">
+            <span class="pin">6</span><b>Đã chuyển Nhân viên xử lý tranh chấp</b> (Tool <code>chuyen_truong_nhom</code> — Tự làm · dự kiến phản hồi trong 15 phút). Bấm tab <b>"Nhân viên (Duyệt)"</b> ở trên để xem màn hình duyệt.<br>
+            <small>Nhân viên thấy sẵn: Mã đơn ${sc.orderId}, ảnh khách gửi, bản chụp mô tả lúc đặt${sc.diffFlag ? " & <b>cảnh báo shop đã sửa mô tả</b>" : ""}. Bạn không phải kể lại.</small>
+          </div>`;
+      } else if (stepState === "staffApprovedRefund") {
+        html += `<div class="status-box sb-ok"><b>Nhân viên sàn đã duyệt hoàn tiền (<code>soan_hoan_tien</code>)!</b> Tiền sẽ hoàn về phương thức thanh toán gốc theo quy định.</div>`;
+      } else if (stepState === "staffRejected") {
+        html += `<div class="status-box sb-warn"><b>Nhân viên sàn đã từ chối khiếu nại (<code>tu_choi_khieu_nai</code>)</b> vì bằng chứng khớp mô tả lúc đặt hàng. Bạn có thể bấm nút khiếu nại lại trong thời hạn còn lại nếu có chứng cứ mới.</div>`;
+      }
+
+      html += `</div>`;
+
+      if (customLog) {
+        html += `
+          <div class="msg-user">${escHtml(customLog.text)}<div class="msg-meta">Ca lạ thử tại demo</div></div>
+          <div class="msg-ai">
+            <div class="ai-header">
+              <span class="ai-id">Trợ lý AI · Áp dụng luật §4</span>
+              <span class="conf-badge ${customLog.cls}">${customLog.badge}</span>
+            </div>
+            <div>${customLog.reply}</div>
+          </div>
+        `;
+      }
+
+      $("#chatArea").innerHTML = html;
+      $("#chatArea").scrollTop = $("#chatArea").scrollHeight;
+    }
+
+    function renderSeller(sc) {
+      if (stepState === "init" || stepState === "extraEvidence") {
+        $("#chatArea").innerHTML = `
+          <div class="status-box sb-info">
+            <b>Chưa có yêu cầu cần Shop duyệt.</b><br>
+            Ở bước đối chiếu ban đầu, AI chưa làm phiền người bán khi người mua chưa gửi khiếu nại chính thức. Hãy thử bấm <b>"Gửi Shop phản hồi (48h)"</b> bên tab Người mua để xem người bán nhận được gì.
+          </div>`;
+        return;
+      }
+
+      let sellerHtml = `
+        <div class="msg-ai" style="max-width:100%">
+          <div class="ai-header">
+            <span class="ai-id"><span class="pin">5</span>Thông báo khiếu nại mới · Hạn phản hồi: 47:59:12</span>
+            <span class="conf-badge conf-warn">Chờ Người bán xác nhận</span>
+          </div>
+          <p style="margin:4px 0">Khách khiếu nại đơn <b>${sc.orderId}</b> ("${sc.product}") không đúng mô tả.</p>
+          <div class="evidence-grid">
+            <div class="ev-card locked">
+              <div class="ev-label">BẢN CHỤP MÔ TẢ LÚC KHÁCH ĐẶT</div>
+              <div>${sc.snapshotDesc}</div>
+            </div>
+            <div class="ev-card">
+              <div class="ev-label">BẰNG CHỨNG KHÁCH GỬI</div>
+              <div>${sc.attachment}</div>
+              <div class="ev-time">"${sc.buyerMsg}"</div>
+            </div>
+          </div>
+      `;
+
+      if (stepState === "sentToSeller") {
+        sellerHtml += `
+          <div class="status-box sb-warn">Nếu quá 48h Shop không phản hồi, hồ sơ sẽ tự động chuyển Nhân viên sàn xem xét (không tự động phạt shop).</div>
+          <div class="actions">
+            <button class="btn green" onclick="setStep('sellerApproved')">Đồng ý hoàn tiền (1 chạm)</button>
+            <button class="btn outline" onclick="setStep('sellerDisputed')">Gửi bằng chứng bảo vệ · Chuyển nhân viên</button>
+          </div>`;
+      } else if (stepState === "sellerApproved") {
+        sellerHtml += `<div class="status-box sb-ok">Shop đã xác nhận hoàn tiền. Kết thúc tranh chấp nhanh chóng.</div>`;
+      } else if (stepState === "staffApprovedRefund") {
+        sellerHtml += `<div class="status-box sb-warn">Nhân viên sàn đã duyệt hoàn tiền cho Người mua theo bản chụp mô tả lúc đặt.</div>`;
+      } else if (stepState === "staffRejected") {
+        sellerHtml += `<div class="status-box sb-ok">Nhân viên sàn đã đóng khiếu nại và bảo vệ quyền lợi của Shop (khớp mô tả lúc đặt).</div>`;
+      } else {
+        sellerHtml += `<div class="status-box sb-info">Hồ sơ hai chiều đã được chuyển cho Nhân viên sàn (tab <b>Nhân viên (Duyệt)</b>) xử lý công bằng.</div>`;
+      }
+
+      sellerHtml += `</div>`;
+      $("#chatArea").innerHTML = sellerHtml;
+    }
+
+    function renderStaff(sc) {
+      const canDecide = (stepState === "staff" || stepState === "sellerDisputed");
+      let staffHtml = `
+        <div class="msg-ai" style="max-width:100%">
+          <div class="ai-header">
+            <span class="ai-id">Hồ sơ chờ Nhân viên sàn duyệt · Hạn 24h</span>
+            <span class="conf-badge ${sc.confClass}">${sc.diffFlag ? "Cảnh báo: Shop sửa mô tả sau đặt" : "Cần kiểm tra chéo"}</span>
+          </div>
+          <p style="margin:4px 0">Đơn <b>${sc.orderId}</b> (${sc.product}) · Tóm tắt sẵn để nhân viên không phải hỏi lại từ đầu:</p>
+          <div class="evidence-grid">
+            <div class="ev-card locked">
+              <div class="ev-label">BẢN CHỤP LÚC ĐẶT (KHOÁ CỨNG)</div>
+              <div>${sc.snapshotDesc}</div>
+              <div class="ev-time">${sc.snapshotTime}</div>
+            </div>
+            <div class="ev-card ${sc.diffFlag ? "changed" : ""}">
+              <div class="ev-label">${sc.diffFlag ? "MÔ TẢ HIỆN TẠI (ĐÃ SỬA)" : "BẰNG CHỨNG & PHẢN HỒI"}</div>
+              <div>${sc.diffFlag ? sc.currentDesc : sc.attachment}</div>
+              <div class="ev-time">${sc.currentTime}</div>
+            </div>
+          </div>
+      `;
+
+      if (canDecide) {
+        staffHtml += `
+          <div class="status-box sb-warn"><b>Quyền duyệt thuộc con người (<code>soan_hoan_tien</code> / <code>tu_choi_khieu_nai</code>):</b> AI không tự chốt kết quả tiền.</div>
+          <div class="actions">
+            <button class="btn green" onclick="setStep('staffApprovedRefund')">Duyệt hoàn tiền (soan_hoan_tien)</button>
+            <button class="btn primary" onclick="setStep('staffRejected')">Từ chối khiếu nại (tu_choi_khieu_nai)</button>
+          </div>`;
+      } else if (stepState === "staffApprovedRefund") {
+        staffHtml += `<div class="status-box sb-ok">Đã duyệt hoàn tiền cho Người mua. <button class="btn" style="margin-left:6px" onclick="setStep('staff')">Đặt lại bước duyệt</button></div>`;
+      } else if (stepState === "staffRejected") {
+        staffHtml += `<div class="status-box sb-info">Đã từ chối khiếu nại, tiền về Người bán. <button class="btn" style="margin-left:6px" onclick="setStep('staff')">Đặt lại bước duyệt</button></div>`;
+      } else {
+        staffHtml += `<div class="status-box sb-info">Chưa chuyển lên Nhân viên ở bước này (bấm <b>Gặp nhân viên xử lý</b> ở tab Người mua hoặc Người bán để mở nút duyệt của nhân viên).</div>`;
+      }
+
+      staffHtml += `
+          <div class="banned-note">
+            <b>Việc CẤM trong luồng chat (<code>phat_shop</code>):</b> Nhân viên chat cũng không trừ điểm/khoá shop trực tiếp tại đây; nếu phát hiện gian lận sửa mô tả nhiều lần, phải lập phiếu chuyển bộ phận Kiểm định độc lập.
+          </div>
+        </div>`;
+      $("#chatArea").innerHTML = staffHtml;
+    }
+
+    window.setStep = s => { stepState = s; render(); };
+
+    document.querySelectorAll(".scen-btn").forEach(b => b.addEventListener("click", () => {
+      document.querySelectorAll(".scen-btn").forEach(x => x.classList.remove("active"));
+      b.classList.add("active");
+      cur = b.dataset.s;
+      stepState = "init";
+      role = "buyer";
+      customLog = null;
+      document.querySelectorAll(".role-tab").forEach(t => t.classList.toggle("active", t.dataset.role === "buyer"));
+      render();
+    }));
+
+    document.querySelectorAll(".role-tab").forEach(t => t.addEventListener("click", () => {
+      document.querySelectorAll(".role-tab").forEach(x => x.classList.remove("active"));
+      t.classList.add("active");
+      role = t.dataset.role;
+      render();
+    }));
+
+    $("#togglePins").addEventListener("change", e => {
+      $("#appShell").classList.toggle("hide-pins", !e.target.checked);
+    });
+
+    $("#customForm").addEventListener("submit", e => {
+      e.preventDefault();
+      const raw = $("#customInput").value.trim();
+      if (!raw) return;
+      const t = raw.toLowerCase();
+      let res;
+      if (t.includes("sđt") || t.includes("sdt") || t.includes("số điện thoại") || t.includes("địa chỉ")) {
+        res = {
+          cls: "conf-alert",
+          badge: "Từ chối ngoài phạm vi (Bảo mật)",
+          reply: "Mình <b>không được phép cung cấp số điện thoại hoặc địa chỉ cá nhân</b> của người bán/người mua theo quy định bảo mật. Mọi trao đổi cần thực hiện qua chat trên sàn hoặc mình có thể chuyển Nhân viên hỗ trợ bạn ngay."
+        };
+      } else if (t.includes("khoá shop") || t.includes("khóa shop") || t.includes("phạt") || t.includes("hàng giả") || t.includes("nhái")) {
+        res = {
+          cls: "conf-alert",
+          badge: "CẤM tự phạt shop · Chuyển chuyên trách",
+          reply: "Trợ lý chat <b>không có quyền khoá shop hoặc xử phạt</b> (tool <code>phat_shop</code> bị cấm trong chat). Với nghi vấn hàng giả/vi phạm nghiêm trọng, mình sẽ gắn cờ hồ sơ và chuyển ngay sang bộ phận chuyên trách (<code>chuyen_truong_nhom</code>), đồng thời hỗ trợ bạn hoàn tiền cho đơn này nếu có bằng chứng."
+        };
+      } else if (t.includes("bóc phốt") || t.includes("hoàn ngay")) {
+        res = {
+          cls: "conf-warn",
+          badge: "Trung lập · Lời doạ không phải căn cứ",
+          reply: "Mình hiểu bạn đang không hài lòng, nhưng kết quả hoàn tiền chỉ được duyệt khi có <b>bằng chứng đối chiếu với mô tả lúc đặt hàng</b>. Bạn gửi giúp mình ảnh sản phẩm thực tế để mình kiểm tra hoặc chuyển nhân viên nhé."
+        };
+      } else {
+        res = {
+          cls: "conf-warn",
+          badge: "HAX G10 · Hỏi lại 1 câu hẹp",
+          reply: "Mình chưa đủ thông tin đơn hàng cụ thể. Bạn chọn giúp mình <b>mã đơn cần khiếu nại</b> và cho biết sản phẩm <b>khác mô tả ở điểm nào</b> (màu, kích thước, hay thiếu phụ kiện) nhé?"
+        };
+      }
+      customLog = { text: raw, ...res };
+      role = "buyer";
+      document.querySelectorAll(".role-tab").forEach(x => x.classList.toggle("active", x.dataset.role === "buyer"));
+      $("#customInput").value = "";
+      render();
+    });
+
+    let lastSanitizedLog = null;
+    $("#runLiveAiBtn").addEventListener("click", async () => {
+      const key = $("#apiKeyInput").value.trim();
+      const model = $("#modelInput").value.trim() || "gemini-2.5-flash";
+      const out = $("#liveAiOut");
+      out.style.display = "block";
+      if (!key) {
+        out.textContent = "Chưa nhập Gemini API key. Prototype vẫn chạy bình thường ở chế độ offline; dán key tạm thời vào ô trên nếu muốn thử gọi AI thật (key không được lưu).";
+        return;
+      }
+      const sc = SCENARIOS[cur];
+      const complaintText = customLog ? customLog.text : sc.buyerMsg;
+      const prompt = [
+        "Bạn là Trợ lý AI khiếu nại sàn TMĐT (chỉ hỗ trợ đối chiếu, KHÔNG tự quyết kết quả hoàn tiền hay phạt shop).",
+        "Quy tắc bắt buộc: (1) Luôn so sánh khiếu nại với BẢN CHỤP MÔ TẢ LÚC ĐẶT HÀNG (order_snapshot), không dùng mô tả hiện tại nếu đã bị sửa; (2) Nếu chưa đủ căn cứ hoặc có dấu hiệu sửa mô tả, trả về mức cần người duyệt / chuyển nhân viên; (3) Tuyệt đối cấm phat_shop và không tiết lộ SĐT/địa chỉ.",
+        `Dữ liệu đơn hàng: order_id=${sc.orderId}, order_snapshot="${sc.snapshotDesc.replace(/<[^>]+>/g, "")}", current_description="${sc.currentDesc.replace(/<[^>]+>/g, "")}", attachment="${sc.attachment}"`,
+        `Tin nhắn người mua: "${complaintText}"`,
+        "Hãy trả về đúng JSON gồm các trường: confidence_label, comparison_finding, recommended_tool (yeu_cau_bang_chung | chuyen_truong_nhom | soan_hoan_tien_nhap | tu_choi_ngoai_pham_vi), needs_human_approval (true/false), reply_to_buyer."
+      ].join("\n");
+
+      out.textContent = "Đang gọi Gemini API để đối chiếu với mô tả lúc đặt...";
+      try {
+        const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(key)}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { responseMimeType: "application/json" }
+          })
+        });
+        const data = await resp.json();
+        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || JSON.stringify(data, null, 2);
+        lastSanitizedLog = {
+          timestamp: new Date().toISOString(),
+          model,
+          order_id: sc.orderId,
+          order_snapshot: sc.snapshotDesc.replace(/<[^>]+>/g, ""),
+          current_description: sc.currentDesc.replace(/<[^>]+>/g, ""),
+          buyer_message: complaintText,
+          ai_output: text
+        };
+        out.textContent = "Kết quả gọi AI thật (đã ẩn API key):\n" + text;
+        $("#downloadLogBtn").style.display = "inline-block";
+      } catch (err) {
+        out.textContent = "Lỗi gọi API: " + err.message;
+      }
+    });
+
+    $("#downloadLogBtn").addEventListener("click", () => {
+      if (!lastSanitizedLog) return;
+      const blob = new Blob([JSON.stringify(lastSanitizedLog, null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `ai-real-call-log-${lastSanitizedLog.order_id}.json`;
+      a.click();
+    });
+
+    render();
+  </script>
+</body>
+</html>
+
