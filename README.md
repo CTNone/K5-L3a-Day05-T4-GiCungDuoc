@@ -10,12 +10,11 @@ Dự án thiết kế trải nghiệm AI trong ứng dụng Shopee, tại mục 
 
 ## Thành viên
 
-- Học viên 1 — Họ tên — Mã học viên
-- Học viên 2 — Họ tên — Mã học viên
-- Học viên 3 — Họ tên — Mã học viên
-- Học viên 4 — Họ tên — Mã học viên
+- Học viên 1 — Hồ Anh Dũng — 2A202603613
+- Học viên 2 — Đỗ Đức Duẩn — 2A202603590
+- Học viên 3 — Chu Thân Nhất — 2A202603649
+- Học viên 4 — Nguyễn Mạnh Quyền — 2A202603518
 
-> Cập nhật họ tên và mã học viên của nhóm trước khi nộp.
 
 ## Mục tiêu trải nghiệm
 
@@ -27,10 +26,10 @@ Dự án thiết kế trải nghiệm AI trong ứng dụng Shopee, tại mục 
 
 ## Tài liệu và prototype
 
-- **Spec:** [`spec.md`](spec.md)
-- **Prototype:** [`prototype/`](prototype/)
-- **Ảnh demo:** [`prototype/images/`](prototype/images/) hoặc [`docs/`](docs/)
-- **Link prototype trực tuyến:** Bổ sung nếu có.
+- **Spec:** spec.md
+- **Prototype:** index (1).html
+- **Ảnh demo:** image 1.png và image 2.png 
+
 
 ## Các ca demo chính
 
@@ -51,11 +50,6 @@ Dự án thiết kế trải nghiệm AI trong ứng dụng Shopee, tại mục 
 
 Repository hiện được nhận diện chủ yếu là **HTML**. Cập nhật mục này nếu nhóm bổ sung công nghệ hoặc công cụ prototype khác.
 
-## Cách xem bài
-
-1. Mở [`spec.md`](spec.md) để xem đặc tả.
-2. Truy cập thư mục [`prototype/`](prototype/) để xem prototype và các tài nguyên liên quan.
-3. Mở ảnh demo trong `prototype/images/` hoặc `docs/` (nếu có).
 
 ---
 
