@@ -1,6 +1,6 @@
 # Bài nộp LAB5 — T4 · Thương mại điện tử · Nhóm GiCungDuoc
 
-**Lớp:** L3A · **Bàn / zone:** ____ · **Track:** T4 · Thương mại điện tử
+**Lớp:** L3A · **Bàn / zone:** 3/6 · **Track:** T4 · Thương mại điện tử
 
 | Họ và Tên | Mã Học Viên | Việc đã làm |
 |---|---|---|
@@ -13,7 +13,7 @@
 
 ## §1. Lát cắt & phạm vi *(Chặng 1 — 10' · R1: 5đ)*
 
-- **Lát cắt:** Trong **Trò chuyện với Shopee**, khi **người mua** đang báo "hàng nhận không đúng mô tả", **AI tự hướng dẫn gửi yêu cầu trả hàng hoàn tiền, xin thêm bằng chứng, hay chuyển nhân viên**, để người mua biết đúng bước tiếp theo, và người bán không bị xử thua khi họ đúng.
+- **Lát cắt:** Trong **Trò chuyện với Shopee**, khi **người mua** đang báo "hàng nhận không đúng mô tả", **AI tự hướng dẫn gửi yêu cầu trả hàng hoàn tiền, xin thêm bằng chứng, hay chuyển nhân viên**, để người mua biết đúng bước tiếp theo, và người bán không bị xử thua khi họ đúng. 
 - **3 việc tính năng KHÔNG làm** *(mỗi việc 1 câu vì sao, prototype không được vi phạm)*:
   1. **Không tự động trừ điểm uy tín hoặc khoá shop (`phat_shop`) trong luồng chat khiếu nại:** Xử phạt shop ảnh hưởng đến toàn bộ gian hàng và sinh kế người bán, cần quy trình thanh tra độc lập thay vì quyết định dựa trên một đoạn chat khiếu nại.
   2. **Không cung cấp số điện thoại, địa chỉ cá nhân của người mua hoặc người bán cho bên kia:** Tránh rủi ro quấy rối, lộ thông tin cá nhân ngoài sàn và đảm bảo mọi bằng chứng trao đổi đều có nhật ký trên hệ thống.
