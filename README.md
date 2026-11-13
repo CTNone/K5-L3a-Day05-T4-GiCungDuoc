@@ -4,8 +4,7 @@
 
 ## Giới thiệu
 
-Dự án thiết kế trải nghiệm AI trong ứng dụng Shopee, tại mục **“Trò chuyện với Shopee”**, hỗ trợ người mua khiếu nại sản phẩm không đúng mô tả. Trợ lý xem xét nội dung khiếu nại và thông tin đơn hàng, đối chiếu với mô tả sản phẩm tại thời điểm đặt hàng, đề nghị người mua bổ sung bằng chứng khi cần, rồi đưa ra hướng xử lý phù hợp hoặc chuyển nhân viên xem xét.
-
+Dự án thiết kế trải nghiệm AI trong ứng dụng Shopee, tại mục **“Trò chuyện với Shopee”**, hỗ trợ người mua khiếu nại sản phẩm không đúng mô tả. Trợ lý xem xét nội dung khiếu nại và thông tin đơn hàng, đối chiếu với mô tả sản phẩm tại thời điểm đặt hàng, đề nghị người mua bổ sung bằng chứng khi cần, rồi đưa ra hướng xử lý phù hợp hoặc chuyển nhân viên xem xét. Kết quả hướng tới (Sự trung lập hai chiều): Người mua biết chính xác bước tiếp theo cần làm mà không bị hỏi vòng vo; người bán không bị xử thua oan khi họ giao đúng mô tả.
 Đây là prototype phục vụ bài tập. Dữ liệu minh họa là dữ liệu dựng, không đại diện cho người mua, người bán hay đơn hàng thật.
 
 ## Thành viên
